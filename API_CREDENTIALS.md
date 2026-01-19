@@ -1,322 +1,257 @@
-# 🔑 API CREDENTIALS QUICK REFERENCE
+# API Credentials Guide
 
-## What You Need
+This document provides detailed information on obtaining and configuring the API credentials needed for this project.
 
-This bot requires **2 sets of API credentials**:
+## Required APIs
 
-1. **X (Twitter) API** - REQUIRED ⚡
-2. **YouTube Data API** - OPTIONAL but recommended 🎥
+This bot requires credentials from two services:
 
----
+1. **X (Twitter) API** - Required for posting tweets
+2. **YouTube Data API v3** - Optional for including YouTube videos
 
-## 1️⃣ X (Twitter) API Credentials
+## X (Twitter) API Setup
 
-### What You Need (4 credentials)
+You need four credentials to authenticate with the X API:
 
-```
-✅ X_API_KEY           (also called "Consumer Key")
-✅ X_API_SECRET        (also called "Consumer Secret")
-✅ X_ACCESS_TOKEN      (user access token)
-✅ X_ACCESS_SECRET     (user access token secret)
-```
+- `X_API_KEY` (also called "Consumer Key" or "API Key")
+- `X_API_SECRET` (also called "Consumer Secret" or "API Key Secret")
+- `X_ACCESS_TOKEN` (User access token)
+- `X_ACCESS_SECRET` (User access token secret)
 
-### Where to Get Them
+### Getting X API Credentials
 
 **URL**: https://developer.twitter.com/en/portal/dashboard
 
-### Step-by-Step
+### Step-by-Step Process
 
-1. **Sign in** with your Twitter account
+**1. Create a Developer Account**
+- Sign in with your Twitter account
+- Apply for developer access if you haven't already
+- Most applications are approved instantly
 
-2. **Create a Project**
-   - Click "Create Project"
-   - Name: "AI Finance News Bot"
-   - Use case: "Making a bot"
-   - Description: "Automated news aggregator"
+**2. Create a Project**
+- Click "Create Project"
+- Project name: Choose any descriptive name (e.g., "AI Finance News Bot")
+- Use case: Select "Making a bot"
+- Project description: Brief explanation of your bot's purpose
 
-3. **Create an App**
-   - Name: "finsure-agent-wire" (must be unique)
-   - Complete setup
+**3. Create an App**
+- App name must be globally unique (e.g., "finsure-agent-wire-yourname")
+- Complete the app creation process
 
-4. **Save API Keys** ⚠️ IMPORTANT
-   - You'll see **API Key** and **API Key Secret**
-   - **COPY THESE NOW** - you won't see them again!
-   - Save to a text file temporarily
+**4. Save API Keys**
+- After creating the app, you'll immediately see your API Key and API Key Secret
+- **Copy both now** - they won't be shown again
+- Store them securely
 
-5. **Set Permissions** ⚠️ CRITICAL
-   - Go to app Settings
-   - "User authentication settings" → "Set up"
-   - **App permissions**: Select "Read and Write"
-   - Type: "Web App, Automated App or Bot"
-   - Callback URI: `http://localhost`
-   - Website: `https://github.com/yourusername/finsure-agent-wire`
-   - **Save**
+**5. Configure Permissions** (Critical)
+- Navigate to app Settings
+- Find "User authentication settings" and click "Set up"
+- App permissions: **Select "Read and Write"**
+- Type of App: "Web App, Automated App or Bot"
+- Callback URI: `http://localhost` (required field but not used)
+- Website URL: Your GitHub repository or project website
+- Save changes
 
-6. **Generate Access Tokens**
-   - Go to "Keys and tokens" tab
-   - Under "Access Token and Secret" → **"Generate"**
-   - **COPY BOTH** - Access Token and Access Token Secret
-   - Save to your text file
+**6. Generate Access Tokens**
+- Go to "Keys and tokens" tab
+- Under "Access Token and Secret", click "Generate"
+- Save both the Access Token and Access Token Secret
 
-### ⚠️ Common Mistakes
+### Important Notes
 
-❌ **Forgetting to set "Read and Write" permissions**
-   → Bot will get 403 Forbidden errors
-   
-❌ **Using old Access Tokens after changing permissions**
-   → Must regenerate tokens after permission change
+- If you change app permissions after generating tokens, you must regenerate the access tokens
+- Old tokens will not reflect the new permissions
+- The free tier allows 50 tweets per 24 hours, which is sufficient for typical usage
 
-❌ **Copying keys with extra spaces**
-   → Trim whitespace when pasting to `.env`
+### Common Issues
 
-### Cost
+**403 Forbidden Error**
+- Cause: App doesn't have write permissions
+- Solution: Ensure "Read and Write" is selected, save, then regenerate access tokens
 
-**FREE** 🎉
-- Free tier: 50 tweets per 24 hours
-- Plenty for this bot (default: 5 tweets every 6h = 20/day)
+**401 Unauthorized Error**
+- Cause: Incorrect credentials
+- Solution: Verify all four credentials are correct and have no extra spaces
 
----
+**429 Rate Limit Error**
+- Cause: Exceeded posting limit
+- Solution: The bot includes retry logic. Consider reducing `MAX_POSTS_PER_RUN` if this occurs frequently
 
-## 2️⃣ YouTube Data API v3 Key
+## YouTube Data API v3 Setup
 
-### What You Need (1 credential)
+You need one credential for YouTube access:
 
-```
-✅ YOUTUBE_API_KEY     (API key for YouTube Data API v3)
-```
+- `YOUTUBE_API_KEY` (API key for YouTube Data API v3)
 
-### Where to Get It
+### Getting YouTube API Key
 
 **URL**: https://console.cloud.google.com
 
-### Step-by-Step
+### Step-by-Step Process
 
-1. **Create a Project**
-   - Click project dropdown (top left)
-   - "New Project"
-   - Name: "finsure-agent-wire"
-   - Click "Create"
-   - Wait ~30 seconds for project to be created
+**1. Create a Google Cloud Project**
+- Click the project dropdown in the top navigation
+- Select "New Project"
+- Project name: Choose a descriptive name (e.g., "finsure-agent-wire")
+- Click "Create"
+- Wait approximately 30 seconds for project creation
 
-2. **Enable YouTube Data API v3**
-   - Use search bar at top: "YouTube Data API v3"
-   - Click on the API → Click **"Enable"**
-   - Wait for it to enable
+**2. Enable YouTube Data API v3**
+- Use the search bar to find "YouTube Data API v3"
+- Click on the API
+- Click "Enable"
+- Wait for the API to be activated
 
-3. **Create API Key**
-   - Left sidebar → "Credentials"
-   - Click "Create Credentials" → **"API key"**
-   - Copy the API key that appears
-   - Save to your text file
+**3. Create API Key**
+- Navigate to "Credentials" from the left sidebar
+- Click "Create Credentials"
+- Select "API key"
+- Copy the generated key
 
-4. **Restrict Key (Optional but Recommended)**
-   - Click on your API key name
-   - Under "API restrictions" → Select "Restrict key"
-   - Choose only **"YouTube Data API v3"**
-   - Save
+**4. Restrict Key** (Optional but Recommended)
+- Click on the API key name
+- Under "API restrictions", select "Restrict key"
+- Check only "YouTube Data API v3"
+- Click "Save"
 
-### Cost
+### Quota Information
 
-**FREE** 🎉
-- Free tier: 10,000 units per day
-- Each search = 100 units
-- Bot runs every 6h = 4 runs × ~100 units = 400 units/day
-- **You're using only 4% of your quota!**
+The free tier provides:
+- 10,000 quota units per day
+- Each search request costs 100 units
+- Running every 6 hours with 3-4 queries uses approximately 400-500 units per day
+- This is well within the free tier limits
 
-### If You Skip This
+### Common Issues
 
-- Bot still works! ✅
-- Just won't include YouTube videos
-- Only GDELT and RSS sources
+**403 Forbidden Error**
+- Cause: API not enabled or quota exceeded
+- Solution: Verify the API is enabled and check quota usage
 
----
+**400 Bad Request Error**
+- Cause: Invalid query parameters
+- Solution: Check that `YOUTUBE_QUERIES` in `.env` is properly formatted (comma-separated, no quotes)
 
-## 3️⃣ RSS Feeds (Optional)
+## Storing Credentials
 
-### What You Need
+### Local Development
 
-**Nothing!** Just URLs 🎉
-
-### Common RSS Feeds
-
-```bash
-# Medium tags
-https://medium.com/feed/tag/fintech
-https://medium.com/feed/tag/insurtech
-https://medium.com/feed/tag/ai
-
-# Tech publications
-https://techcrunch.com/category/fintech/feed/
-https://venturebeat.com/category/ai/feed/
-
-# Finance publications
-https://www.pymnts.com/feed/
-https://www.bankingtech.com/feed/
-```
-
-### How to Find RSS Feeds
-
-Most sites have RSS! Look for:
-- `/feed/` or `/rss/` URLs
-- Orange RSS icon
-- "Subscribe" links
-- Google: "site:example.com rss"
-
-### Cost
-
-**FREE** - No API key needed 🎉
-
----
-
-## 🔐 Storing Your Credentials
-
-### For Local Testing
-
-Create `.env` file:
+Create a `.env` file in the project root:
 
 ```bash
-# X API (REQUIRED)
-X_API_KEY=AaBbCcDd123456xyz
-X_API_SECRET=XxYyZz789secret
-X_ACCESS_TOKEN=1234567890-AbCdEfGh
-X_ACCESS_SECRET=SecretTokenHere123
+# X API credentials (required)
+X_API_KEY=your_api_key_here
+X_API_SECRET=your_api_secret_here
+X_ACCESS_TOKEN=your_access_token_here
+X_ACCESS_SECRET=your_access_token_secret_here
 
-# YouTube API (OPTIONAL)
-YOUTUBE_API_KEY=AIzaSyABC123XYZ
+# YouTube API (optional)
+YOUTUBE_API_KEY=your_youtube_key_here
 
-# YouTube searches (customize!)
-YOUTUBE_QUERIES=AI agents finance,autonomous agents banking,LLM fintech
-
-# RSS feeds (customize!)
-RSS_FEEDS=https://medium.com/feed/tag/fintech,https://techcrunch.com/feed/
-
-# Safety (keep true for testing!)
+# Configuration
 DRY_RUN=true
-REVIEW_MODE=false
-
-# Settings
 LOOKBACK_HOURS=24
 MAX_POSTS_PER_RUN=5
 MAX_POSTS_PER_DOMAIN=1
 MIN_SCORE_THRESHOLD=5.0
 ```
 
-### For GitHub Actions
+Important:
+- Never commit `.env` to version control
+- The file is already listed in `.gitignore`
+- Ensure no extra spaces or quotes around values
 
-**Never commit `.env` to GitHub!**
+### GitHub Actions Deployment
 
-Instead:
-1. Go to your repo on GitHub
-2. Settings → Secrets and variables → Actions
+For automated deployment via GitHub Actions:
+
+1. Navigate to your repository on GitHub
+2. Go to Settings → Secrets and variables → Actions
 3. Click "New repository secret"
-4. Add each secret:
+4. Add each credential as a separate secret:
+   - Name: `X_API_KEY`, Value: [your API key]
+   - Name: `X_API_SECRET`, Value: [your API secret]
+   - Name: `X_ACCESS_TOKEN`, Value: [your access token]
+   - Name: `X_ACCESS_SECRET`, Value: [your access token secret]
+   - Name: `YOUTUBE_API_KEY`, Value: [your YouTube key] (optional)
 
-```
-Name: X_API_KEY
-Value: [paste your API key]
+The workflow file is already configured to use these secrets.
 
-Name: X_API_SECRET
-Value: [paste your API secret]
+## RSS Feeds Configuration
 
-Name: X_ACCESS_TOKEN
-Value: [paste your access token]
-
-Name: X_ACCESS_SECRET
-Value: [paste your access token secret]
-
-Name: YOUTUBE_API_KEY
-Value: [paste your YouTube key]
-```
-
----
-
-## ✅ Validation Checklist
-
-Before running the bot:
-
-- [ ] X API Key copied (starts with uppercase letters)
-- [ ] X API Secret copied (longer, mixed case)
-- [ ] X Access Token copied (format: `1234567890-AbCdEf...`)
-- [ ] X Access Token Secret copied (mixed case string)
-- [ ] X app has "Read and Write" permissions ⚠️
-- [ ] YouTube API key copied (starts with `AIza...`) (optional)
-- [ ] All credentials pasted into `.env`
-- [ ] No extra spaces or quotes in `.env`
-- [ ] `DRY_RUN=true` for initial testing
-
----
-
-## 🆘 Troubleshooting Credentials
-
-### X API Returns 401 Unauthorized
-
-**Cause**: Wrong credentials
-
-**Fix**:
-1. Double-check all 4 credentials in `.env`
-2. Make sure no extra spaces
-3. Regenerate Access Token if needed
-
-### X API Returns 403 Forbidden
-
-**Cause**: App doesn't have write permissions
-
-**Fix**:
-1. Go to app settings on Twitter Developer Portal
-2. User authentication settings → Edit
-3. Set to "Read and Write"
-4. **Save**
-5. **Regenerate Access Token** (old ones won't work!)
-6. Update `.env` with new tokens
-
-### YouTube API Returns 403
-
-**Cause**: API not enabled OR quota exceeded
-
-**Fix**:
-1. Make sure "YouTube Data API v3" is enabled in Google Cloud
-2. Check quota: https://console.cloud.google.com/apis/api/youtube.googleapis.com/quotas
-3. If over quota, wait 24h or remove `YOUTUBE_API_KEY` from `.env`
-
-### YouTube API Returns 400 Bad Request
-
-**Cause**: Invalid query format
-
-**Fix**:
-- Check `YOUTUBE_QUERIES` is comma-separated
-- Remove any quotes around queries
-- Example: `YOUTUBE_QUERIES=AI agents,fintech news`
-
----
-
-## 🎯 Quick Start Command
-
-After setting up credentials:
+RSS feeds don't require API keys. Simply add feed URLs to your `.env` file:
 
 ```bash
-# Copy template
-cp .env.example .env
-
-# Edit .env with your favorite editor
-# nano .env    (Linux/Mac)
-# notepad .env (Windows)
-
-# Or just:
-code .env  # VS Code
+RSS_FEEDS=https://medium.com/feed/tag/fintech,https://techcrunch.com/feed/
 ```
 
-Then paste your credentials!
+### Finding RSS Feeds
 
----
+Most publications offer RSS feeds. Common patterns:
+- Look for `/feed/` or `/rss/` URLs
+- Check for RSS icons on websites
+- Search: "site:example.com rss"
 
-## 📞 Need Help?
+### Premium Sources
 
-- **X API Issues**: https://developer.twitter.com/en/support
-- **YouTube API Issues**: https://console.cloud.google.com/support
-- **This Repo**: Open a GitHub issue
+The following sources are already configured:
+- Wall Street Journal
+- Financial Times
+- Reuters
+- American Banker
+- Insurance Journal
+- MIT Technology Review
+- Wired
+- TechCrunch
+- VentureBeat
+- CoinDesk
 
----
+## Credential Validation
 
-**Once you have these credentials, setup takes 5 minutes! 🚀**
+Before running the bot, verify:
 
-See `NEXT_STEPS.md` for what to do next.
+- [ ] All X API credentials are saved
+- [ ] X app has "Read and Write" permissions
+- [ ] Access tokens were generated after setting permissions
+- [ ] YouTube API key is saved (if using YouTube)
+- [ ] No extra spaces or quotes in `.env` file
+- [ ] `DRY_RUN=true` for initial testing
+
+## Testing Credentials
+
+Test your setup with:
+
+```bash
+python scripts/run_once.py
+```
+
+This will validate credentials and attempt to collect news without posting (if `DRY_RUN=true`).
+
+## Security Best Practices
+
+1. Never commit `.env` to version control
+2. Use GitHub Secrets for deployment
+3. Restrict API keys to only the necessary services
+4. Rotate credentials periodically
+5. Monitor API usage for unexpected activity
+6. Use separate credentials for development and production if possible
+
+## Cost Summary
+
+All required services are free:
+
+| Service | Free Tier | Typical Usage | Cost |
+|---------|-----------|---------------|------|
+| X API | 50 tweets/24h | 20 tweets/24h | Free |
+| YouTube API | 10,000 units/day | 400 units/day | Free |
+| RSS Feeds | Unlimited | N/A | Free |
+
+## Support Resources
+
+- **X API Documentation**: https://developer.twitter.com/en/docs
+- **YouTube API Documentation**: https://developers.google.com/youtube/v3
+- **X API Support**: https://developer.twitter.com/en/support
+- **Google Cloud Support**: https://console.cloud.google.com/support
+
+For project-specific issues, consult the main [README.md](./README.md) or [SETUP.md](./SETUP.md).
