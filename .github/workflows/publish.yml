@@ -1,0 +1,69 @@
+name: Publish AI Finance News
+
+on:
+  # Run on schedule (every 6 hours)
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+  
+  # Allow manual trigger from Actions tab
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: Run autoposter
+        env:
+          # X API credentials
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_SECRET: ${{ secrets.X_ACCESS_SECRET }}
+          
+          # YouTube API (optional)
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          
+          # Operational settings (customize as needed)
+          DRY_RUN: false  # Set to true for testing
+          REVIEW_MODE: false
+          LOOKBACK_HOURS: 24
+          MAX_POSTS_PER_RUN: 5
+          MAX_POSTS_PER_DOMAIN: 1
+          MIN_SCORE_THRESHOLD: 5.0
+          
+          # Optional overrides from secrets
+          YOUTUBE_QUERIES: ${{ secrets.YOUTUBE_QUERIES }}
+          RSS_FEEDS: ${{ secrets.RSS_FEEDS }}
+          
+          # Database path (stored in GitHub Actions workspace)
+          DB_PATH: ./data/autoposter.db
+          
+          # Logging
+          LOG_LEVEL: INFO
+        
+        run: |
+          python scripts/run_once.py
+      
+      - name: Upload logs (if failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: |
+            *.log
+            data/
+          retention-days: 7
