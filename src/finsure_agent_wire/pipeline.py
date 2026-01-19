@@ -9,6 +9,7 @@ from .db import Database, prepare_items_for_dedup, deduplicate_items
 from .models import NewsItem
 from .scoring import score_items
 from .sources import fetch_gdelt_articles, fetch_youtube_videos, fetch_rss_feeds
+from .sources.arxiv import fetch_arxiv_papers
 from .x_client import XClient
 
 logger = logging.getLogger(__name__)
@@ -68,6 +69,22 @@ def collect_news(config: Config) -> List[NewsItem]:
             logger.error(f"RSS fetch failed: {e}")
     else:
         logger.info("RSS: Skipped (no feeds configured)")
+    
+    # arXiv Research Papers
+    arxiv_queries = config.get_arxiv_query_list()
+    if arxiv_queries:
+        try:
+            arxiv_items = fetch_arxiv_papers(
+                queries=arxiv_queries,
+                lookback_hours=config.lookback_hours,
+                max_results=config.arxiv_max_results,
+            )
+            all_items.extend(arxiv_items)
+            logger.info(f"arXiv: Fetched {len(arxiv_items)} papers")
+        except Exception as e:
+            logger.error(f"arXiv fetch failed: {e}")
+    else:
+        logger.info("arXiv: Skipped (no queries configured)")
     
     logger.info(f"Total items collected: {len(all_items)}")
     return all_items

@@ -1,100 +1,80 @@
-# 🤖💰 AI Agents in Finance News Autoposter
+# AI Agents in Finance News Autoposter
 
-**Continuously discover and share the latest AI agent innovations in finance and insurance**
+An automated news aggregator that discovers and shares recent developments in AI agents applied to finance and insurance. The system collects content from multiple sources, filters for relevance, and posts curated items to X (Twitter).
 
-## 🎯 Repository Name Suggestions
+## Overview
 
-1. **finsure-agent-wire** ⭐ (Current - Finance/Insurance Agent Newswire)
-2. **agent-finance-radar** (Agent Finance Detection System)
-3. **finai-agent-feed** (Financial AI Agent Feed)
-4. **insurtech-agent-pulse** (Insurtech Agent News Pulse)
-5. **agentic-fin-news** (Agentic Finance News Bot)
-6. **finagent-autoposter** (Financial Agent Autoposter)
-7. **ai-finance-scout** (AI Finance News Scout)
-8. **agents-in-finance** (Agents in Finance News Hub)
+This project continuously monitors news about AI agents in the finance and insurance sectors from several legitimate sources:
 
----
+- **arXiv Research Papers** - Academic publications from Cornell University's repository
+- **Premium Financial News** - WSJ, Financial Times, Reuters, American Banker, Insurance Journal
+- **Tech Publications** - MIT Technology Review, Wired AI, TechCrunch, VentureBeat
+- **GDELT API** - Global news aggregator covering the last 24 hours
+- **YouTube Data API** - Long-form videos only (4+ minutes, Shorts filtered out)
 
-## 📋 Overview
+The system uses dual-keyword relevance scoring to ensure items match both AI agent technology and finance/insurance topics. Content is deduplicated using URL canonicalization and SQLite tracking to prevent reposting.
 
-This bot automatically:
-- ✅ **Collects** recent news (last 24 hours) about AI agents in finance/insurance from multiple sources
-- ✅ **Filters** using dual-keyword relevance scoring (AI agents + finance/insurance)
-- ✅ **Deduplicates** using URL canonicalization and SQLite state tracking
-- ✅ **Posts** top items to X (Twitter) with clean, professional formatting
-- ✅ **Rate-limits** to maintain quality (max posts per run, max 1 per domain)
-- ✅ **Runs** locally or on GitHub Actions schedule
+For details on how the system works and what data it reads, see [HOW_IT_WORKS.md](./HOW_IT_WORKS.md).
 
-### 🎯 Sources
+## Features
 
-1. **GDELT DOC API** - Global news aggregator (24h timespan)
-2. **YouTube Data API v3** - Video content (publishedAfter filter)
-3. **RSS/Medium Feeds** - Direct feeds from finance/insurtech publications
+- Collects recent news from the last 24 hours (configurable)
+- Dual-keyword matching: items must be relevant to both AI agents AND finance/insurance
+- URL canonicalization and deduplication to prevent duplicate posts
+- Domain rate limiting to ensure diversity (max 1 post per domain per run)
+- Source credibility scoring with boosts for academic papers and premium news
+- DRY_RUN and REVIEW_MODE for safe testing
+- Scheduled execution via GitHub Actions or manual runs
+- Detailed logging with metrics on collection, filtering, and posting
 
-### 🧠 Relevance Scoring
-
-Items must match **BOTH** signal categories:
-- **AI Agent Signals**: agent, agents, agentic, autonomous, multi-agent, LLM, LangChain, LangGraph, tool-use, orchestration, planner, etc.
-- **Finance/Insurance Signals**: fintech, insurtech, banking, trading, underwriting, claims, fraud, risk, compliance, KYC, AML, policy, premium, etc.
-
-Hard-filtered exclusions: sports, celebrity, gossip, astrology, etc.
-
----
-
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.11 or higher
 - X (Twitter) Developer Account with API credentials
-- YouTube Data API v3 key (optional, free tier)
-- Git & GitHub account (for Actions deployment)
+- YouTube Data API v3 key (optional but recommended)
+- Git and GitHub account (for scheduled deployment)
 
 ### Local Setup
 
-1. **Clone the repo**
+1. Clone the repository:
    ```bash
    git clone https://github.com/pranav-here/finsure-agent-wire.git
    cd finsure-agent-wire
    ```
 
-2. **Install dependencies**
+2. Install dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **Configure environment**
+3. Configure environment variables:
    ```bash
    cp .env.example .env
-   # Edit .env with your credentials (see Configuration section below)
+   # Edit .env with your API credentials
    ```
 
-4. **Run in DRY RUN mode** (safe, no actual posting)
+4. Test in DRY RUN mode (safe, no actual posting):
    ```bash
    python scripts/run_once.py
    ```
 
-5. **Review mode** (prints tweet drafts for manual review)
-   ```bash
-   # Set REVIEW_MODE=true in .env
-   python scripts/run_once.py
-   ```
+5. Review the output and adjust configuration as needed
 
-6. **Live posting** (after testing)
+6. Enable live posting after testing:
    ```bash
    # Set DRY_RUN=false in .env
    python scripts/run_once.py
    ```
 
----
-
-## ⚙️ Configuration
+## Configuration
 
 ### Required Environment Variables
 
-Copy `.env.example` to `.env` and configure:
+Copy `.env.example` to `.env` and configure the following:
 
-#### X (Twitter) API Credentials (OAuth 1.0a)
+**X (Twitter) API Credentials** (OAuth 1.0a):
 ```bash
 X_API_KEY=your_api_key
 X_API_SECRET=your_api_secret
@@ -102,31 +82,22 @@ X_ACCESS_TOKEN=your_access_token
 X_ACCESS_SECRET=your_access_token_secret
 ```
 
-**How to get X API credentials:**
-1. Go to [developer.twitter.com](https://developer.twitter.com)
-2. Create a Project and App
-3. Enable OAuth 1.0a User Authentication
-4. Copy API Key, API Secret, Access Token, Access Token Secret
-5. Ensure app has "Read and Write" permissions
+See [API_CREDENTIALS.md](./API_CREDENTIALS.md) for detailed setup instructions.
 
-#### YouTube API (Optional but Recommended)
+**YouTube API** (optional):
 ```bash
 YOUTUBE_API_KEY=your_youtube_api_v3_key
 ```
 
-**How to get YouTube API key:**
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create a project
-3. Enable "YouTube Data API v3"
-4. Create credentials → API Key
-5. Free tier: 10,000 units/day (sufficient for hourly runs)
+The free tier provides 10,000 units per day. Each search uses 100 units. Running every 6 hours uses approximately 400 units per day.
 
-#### RSS Feeds (Optional)
+**RSS Feeds** (optional):
 ```bash
 RSS_FEEDS=https://medium.com/feed/tag/fintech,https://techcrunch.com/feed/
 ```
 
-#### Operational Settings
+### Operational Settings
+
 ```bash
 DRY_RUN=true                    # Set to false for live posting
 REVIEW_MODE=false               # Set to true to print drafts without posting
@@ -154,61 +125,54 @@ FINANCE_KEYWORD_WEIGHT=1.0
 RECENCY_WEIGHT=0.5
 ```
 
----
-
-## 🤖 GitHub Actions Deployment
+## GitHub Actions Deployment
 
 ### Setup
 
-1. **Add Secrets to GitHub**
-   - Go to: Settings → Secrets and variables → Actions → New repository secret
+1. Add repository secrets in GitHub:
+   - Go to Settings → Secrets and variables → Actions → New repository secret
    - Add each credential from your `.env` file:
      - `X_API_KEY`
      - `X_API_SECRET`
      - `X_ACCESS_TOKEN`
      - `X_ACCESS_SECRET`
      - `YOUTUBE_API_KEY` (if using YouTube)
-     - Any other custom env vars
 
-2. **Push to GitHub**
+2. Push to GitHub:
    ```bash
    git add .
-   git commit -m "Initial commit: AI finance news autoposter"
+   git commit -m "Initial commit"
    git push origin main
    ```
 
-3. **Workflow will run automatically**
-   - Default schedule: Every 6 hours
-   - Manually trigger: Actions tab → "Publish AI Finance News" → Run workflow
+3. The workflow will run automatically based on the schedule, or you can trigger it manually from the Actions tab.
 
 ### Customize Schedule
 
 Edit `.github/workflows/publish.yml`:
 ```yaml
 schedule:
-  - cron: '0 */6 * * *'  # Every 6 hours
-  # Examples:
+  - cron: '0 */6 * * *'  # Every 6 hours (default)
   # - cron: '0 */3 * * *'   # Every 3 hours
   # - cron: '0 8,16 * * *'  # 8am and 4pm daily
   # - cron: '0 9 * * 1-5'   # 9am weekdays only
 ```
 
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 finsure-agent-wire/
 ├── src/finsure_agent_wire/
 │   ├── __init__.py
-│   ├── config.py           # Pydantic settings + environment vars
+│   ├── config.py           # Pydantic settings and environment variables
 │   ├── models.py           # NewsItem dataclass
-│   ├── db.py               # SQLite schema + deduplication
+│   ├── db.py               # SQLite schema and deduplication
 │   ├── scoring.py          # Dual-keyword relevance scoring
 │   ├── pipeline.py         # Main orchestration logic
 │   ├── x_client.py         # X API v2 client with OAuth 1.0a
 │   └── sources/
 │       ├── __init__.py
+│       ├── arxiv.py        # arXiv research paper integration
 │       ├── gdelt.py        # GDELT DOC API integration
 │       ├── youtube.py      # YouTube Data API v3 integration
 │       └── rss.py          # RSS/Medium feed parser
@@ -221,12 +185,13 @@ finsure-agent-wire/
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
-└── README.md
+├── README.md
+├── HOW_IT_WORKS.md        # Technical deep-dive
+├── SETUP.md               # Detailed setup guide
+└── API_CREDENTIALS.md     # API key setup instructions
 ```
 
----
-
-## 🧪 Testing & Validation
+## Testing and Validation
 
 ### Test Relevance Scoring
 
@@ -234,27 +199,24 @@ finsure-agent-wire/
 python scripts/test_scoring.py
 ```
 
-This prints scores for sample titles to validate your keyword tuning.
+This prints scores for sample titles to validate keyword tuning.
 
 ### Dry Run
 
 ```bash
-# In .env, ensure DRY_RUN=true
+# Ensure DRY_RUN=true in .env
 python scripts/run_once.py
 ```
 
 Check logs for:
-- ✅ Items fetched per source
-- ✅ Items filtered by age
-- ✅ Items filtered by relevance
-- ✅ Deduplication stats
-- ✅ Tweet drafts (Review Mode)
+- Items fetched per source
+- Items filtered by age and relevance
+- Deduplication statistics
+- Tweet drafts (if REVIEW_MODE enabled)
 
----
+## Observability
 
-## 📊 Observability
-
-Every run logs:
+Each run logs detailed metrics:
 ```
 [INFO] === Starting News Collection ===
 [INFO] GDELT: Fetched 234 articles
@@ -265,71 +227,65 @@ Every run logs:
 [INFO] Filtered by relevance (score < 5.0): 154
 [INFO] After deduplication: 38 unique items
 [INFO] Top 5 items selected for posting
-[INFO] DRY_RUN=true: Would post 5 tweets
 [INFO] Posted 0 tweets (DRY_RUN enabled)
 ```
 
-Errors are logged with clear context:
+Errors are logged with context:
 ```
 [ERROR] X API Error: 429 Rate Limit - Retry in 15 minutes
 [WARNING] YouTube API quota exceeded - skipping video search
 ```
 
----
-
-## 🔒 Safety Features
+## Safety Features
 
 1. **DRY_RUN mode** (default) - Test without posting
 2. **REVIEW_MODE** - Print tweet drafts for manual approval
-3. **Strict 24h filter** - Never post stale news
+3. **24-hour filter** - Never post stale news
 4. **Domain rate limiting** - Prevent outlet monopolization
-5. **URL canonicalization** - Strip UTM params before hashing
-6. **Deduplication** - SQLite tracks posted URLs forever
-7. **Max posts per run** - Configurable ceiling
+5. **URL canonicalization** - Strip tracking parameters before hashing
+6. **Deduplication** - SQLite tracks posted URLs to prevent duplicates
+7. **Max posts per run** - Configurable ceiling on posting volume
 
----
+## Tweet Formatting
 
-## 🎨 Tweet Formatting
-
-Clean, professional, non-cringe format:
-
+Tweets follow a clean, professional format:
 ```
 {Title} — {Context Phrase} {URL}
 ```
 
-**Example:**
+Example:
 ```
 Anthropic launches agent-based fraud detection for banks — New autonomous system processes insurance claims in real-time https://example.com/article
 ```
 
-- ✅ Always <= 280 characters
-- ✅ Context derived ONLY from title/description (no hallucinations)
-- ✅ Clean URLs (canonicalized, no tracking params)
-- ✅ Professional tone
+Constraints:
+- Always 280 characters or less
+- Context derived only from title and description
+- Clean URLs with canonicalization
+- Professional tone
 
----
-
-## 🛠️ Troubleshooting
+## Troubleshooting
 
 ### X API Errors
 
-**403 Forbidden**
-- Check app has "Read and Write" permissions
-- Regenerate Access Token after permission change
+**403 Forbidden**:
+- Verify app has "Read and Write" permissions
+- Regenerate Access Token after changing permissions
 
-**429 Rate Limited**
-- Free tier: 50 posts/24h
-- Bot includes exponential backoff & retries
+**429 Rate Limited**:
+- Free tier allows 50 posts per 24 hours
+- Bot includes exponential backoff and retries
 
-**401 Unauthorized**
+**401 Unauthorized**:
 - Verify all 4 credentials in `.env`
 - Check for extra spaces or quotes
 
-### YouTube API Quota
+### YouTube API
 
-- Free tier: 10,000 units/day
-- Each search = 100 units
-- Runs every 6h = ~400 units/day (safe)
+**Quota Exceeded**:
+- Free tier: 10,000 units per day
+- Each search uses 100 units
+- Running every 6 hours uses approximately 400 units per day
 
 ### No Items Found
 
@@ -337,16 +293,14 @@ Anthropic launches agent-based fraud detection for banks — New autonomous syst
 - Lower `MIN_SCORE_THRESHOLD` temporarily
 - Run `test_scoring.py` to validate keywords
 
----
-
-## 📈 Advanced Configuration
+## Advanced Configuration
 
 ### Custom Keywords
 
 Edit `src/finsure_agent_wire/scoring.py`:
 
 ```python
-AGENT_KEYWORDS = [
+AI_KEYWORDS = [
     'agent', 'agents', 'agentic', 'autonomous',
     'multi-agent', 'llm agent', 'ai agent',
     # Add your keywords...
@@ -367,59 +321,22 @@ FINANCE_KEYWORD_WEIGHT=1.0     # Standard finance weight
 RECENCY_WEIGHT=0.3             # Slight recency boost
 ```
 
----
+## Contributing
 
-## 🤝 Contributing
+Improvements are welcome:
 
-This is a production-ready personal bot, but improvements are welcome:
-
-1. Fork the repo
+1. Fork the repository
 2. Create a feature branch
 3. Add tests if applicable
-4. Submit a PR with clear description
+4. Submit a pull request with clear description
 
----
+## License
 
-## 📄 License
+MIT License - free to use for personal or commercial projects.
 
-MIT License - use freely for personal or commercial projects.
+## Documentation
 
----
-
-## 🎯 Next Steps for YOU
-
-### 1. Get X (Twitter) API Credentials
-   - Visit: https://developer.twitter.com
-   - Create app, enable OAuth 1.0a
-   - Copy 4 credentials to `.env`
-
-### 2. Get YouTube API Key (Recommended)
-   - Visit: https://console.cloud.google.com
-   - Enable YouTube Data API v3
-   - Create API key, add to `.env`
-
-### 3. Configure `.env`
-   - Copy `.env.example` → `.env`
-   - Add your credentials
-   - Adjust `LOOKBACK_HOURS`, `MAX_POSTS_PER_RUN`, etc.
-
-### 4. Test Locally
-   ```bash
-   # Install dependencies
-   pip install -r requirements.txt
-   
-   # Test scoring
-   python scripts/test_scoring.py
-   
-   # Dry run
-   python scripts/run_once.py
-   ```
-
-### 5. Deploy to GitHub Actions
-   - Add secrets to GitHub repo settings
-   - Push to main branch
-   - Workflow runs automatically every 6h
-
----
-
-**Built with ❤️ for discovering the cutting edge of AI agents in finance & insurance**
+- [HOW_IT_WORKS.md](./HOW_IT_WORKS.md) - Technical deep-dive into system architecture
+- [SETUP.md](./SETUP.md) - Complete setup guide
+- [API_CREDENTIALS.md](./API_CREDENTIALS.md) - API key setup instructions
+- [DATA_QUALITY.md](./DATA_QUALITY.md) - Source legitimacy and quality details

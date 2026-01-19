@@ -51,7 +51,7 @@ def fetch_youtube_videos(
             try:
                 logger.info(f"Searching YouTube for: {query}")
                 
-                # Search for videos
+                # Search for videos (exclude Shorts by requiring medium+ length)
                 search_response = youtube.search().list(
                     q=query,
                     type='video',
@@ -59,6 +59,7 @@ def fetch_youtube_videos(
                     publishedAfter=published_after,
                     order='date',  # Most recent first
                     maxResults=max_results_per_query,
+                    videoDuration='medium',  # Excludes videos under 4 minutes (filters out Shorts)
                 ).execute()
                 
                 videos = search_response.get('items', [])
@@ -68,6 +69,12 @@ def fetch_youtube_videos(
                     try:
                         video_id = video['id']['videoId']
                         snippet = video['snippet']
+                        title = snippet.get('title', 'Untitled').lower()
+                        
+                        # Skip YouTube Shorts (additional filter)
+                        if 'shorts' in title or '#shorts' in snippet.get('description', '').lower():
+                            logger.debug(f"Skipping YouTube Short: {title}")
+                            continue
                         
                         # Parse publish date
                         published_str = snippet.get('publishedAt', '')
@@ -83,7 +90,7 @@ def fetch_youtube_videos(
                         
                         item = NewsItem(
                             url=f"https://www.youtube.com/watch?v={video_id}",
-                            title=snippet.get('title', 'Untitled'),
+                            title=snippet.get('title', 'Untitled'),  # Use original case title
                             description=snippet.get('description', ''),
                             source='youtube',
                             published_at=pub_date,

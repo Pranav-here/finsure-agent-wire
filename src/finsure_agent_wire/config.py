@@ -37,6 +37,15 @@ class Config(BaseSettings):
     )
     
     # ===========================
+    # arXiv Research Papers
+    # ===========================
+    arxiv_queries: str = Field(
+        "artificial intelligence finance,autonomous agents trading",
+        description="Comma-separated arXiv search queries"
+    )
+    arxiv_max_results: int = Field(25, description="Max papers per arXiv query", ge=1, le=100)
+    
+    # ===========================
     # Operational Settings
     # ===========================
     dry_run: bool = Field(True, description="If true, don't actually post tweets")
@@ -87,6 +96,12 @@ class Config(BaseSettings):
         if not self.rss_feeds:
             return []
         return [url.strip() for url in self.rss_feeds.split(",") if url.strip()]
+    
+    def get_arxiv_query_list(self) -> List[str]:
+        """Parse comma-separated arXiv queries."""
+        if not self.arxiv_queries:
+            return []
+        return [q.strip() for q in self.arxiv_queries.split(",") if q.strip()]
     
     def ensure_db_directory(self) -> None:
         """Ensure database directory exists."""
