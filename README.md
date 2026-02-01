@@ -20,9 +20,10 @@ For details on how the system works and what data it reads, see [HOW_IT_WORKS.md
 
 - Collects recent news from the last 24 hours (configurable)
 - Dual-keyword matching: items must be relevant to both AI agents AND finance/insurance
-- URL canonicalization and deduplication to prevent duplicate posts
+- URL canonicalization plus in-run deduplication that collapses repeated links and keeps the highest-quality version
 - Domain rate limiting to ensure diversity (max 1 post per domain per run)
 - Source credibility scoring with boosts for academic papers and premium news
+- Tone-aware tweet generator (news/serious/light) that summarizes the article so posts are less bland
 - DRY_RUN and REVIEW_MODE for safe testing
 - Scheduled execution via GitHub Actions or manual runs
 - Detailed logging with metrics on collection, filtering, and posting
