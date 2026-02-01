@@ -19,6 +19,11 @@ This system collects news about AI agents in finance/insurance from multiple sou
 
 **⚠️ Important**: The system does **NOT** read video transcripts, full article content, or PDF papers. It relies on **titles, descriptions, and metadata** to identify relevant content, which is sufficient for news discovery and sharing.
 
+### What's new (2026-02-01)
+
+- In-run deduplication now collapses repeated links in the same fetch cycle and keeps the highest-scoring/latest version, eliminating timeline doubles.
+- Tweet formatter is tone-aware (news / serious / light) and auto-summarizes the item so posts read less robotic while staying under 280 characters.
+
 ---
 
 ## 🏗️ System Architecture
