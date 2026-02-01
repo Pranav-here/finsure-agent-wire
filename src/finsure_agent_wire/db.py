@@ -242,7 +242,8 @@ def prepare_items_for_dedup(items: List[NewsItem]) -> List[NewsItem]:
 
 def deduplicate_items(items: List[NewsItem], db: Database) -> List[NewsItem]:
     """
-    Remove items that have already been posted.
+    Remove items that have already been posted and collapse duplicates
+    within the current batch, keeping the strongest candidate.
     
     Args:
         items: List of NewsItems (must have url_hash populated)
@@ -253,12 +254,34 @@ def deduplicate_items(items: List[NewsItem], db: Database) -> List[NewsItem]:
     """
     posted_hashes = db.get_posted_url_hashes()
     
-    before_count = len(items)
-    unique_items = [item for item in items if item.url_hash not in posted_hashes]
-    after_count = len(unique_items)
+    kept_by_hash = {}
+    skipped_posted = 0
     
-    duplicates = before_count - after_count
-    if duplicates > 0:
-        logger.info(f"Removed {duplicates} duplicate items (already posted)")
+    for item in items:
+        if item.url_hash in posted_hashes:
+            skipped_posted += 1
+            continue
+        
+        existing = kept_by_hash.get(item.url_hash)
+        # Prefer higher relevance, then newer publish time
+        if (
+            existing is None
+            or (
+                item.relevance_score,
+                item.published_at.timestamp(),
+            )
+            > (
+                existing.relevance_score,
+                existing.published_at.timestamp(),
+            )
+        ):
+            kept_by_hash[item.url_hash] = item
     
-    return unique_items
+    in_batch_duplicates = len(items) - skipped_posted - len(kept_by_hash)
+    
+    if skipped_posted:
+        logger.info(f"Removed {skipped_posted} items already posted (DB dedup)")
+    if in_batch_duplicates:
+        logger.info(f"Collapsed {in_batch_duplicates} duplicates within current batch")
+    
+    return list(kept_by_hash.values())
